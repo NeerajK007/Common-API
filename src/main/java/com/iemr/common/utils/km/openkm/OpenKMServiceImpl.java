@@ -25,6 +25,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.iemr.common.utils.config.ConfigProperties;
 import com.iemr.common.utils.km.KMService;
 import com.openkm.sdk4j.OKMWebservices;
@@ -45,8 +48,7 @@ import com.openkm.sdk4j.exception.UserQuotaExceededException;
 import com.openkm.sdk4j.exception.VersionException;
 import com.openkm.sdk4j.exception.VirusDetectedException;
 import com.openkm.sdk4j.exception.WebserviceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 public class OpenKMServiceImpl implements KMService {
 	// private ConfigProperties configProperties;
 	//
@@ -115,6 +117,8 @@ public class OpenKMServiceImpl implements KMService {
 		String response = null;
 		this.init();
 		try {
+			if (filepath.contains("..") || !filepath.startsWith("c:/temp/"))
+				throw new AccessDeniedException("Invalid file path or file name.");
 			FileInputStream file = new FileInputStream(filepath);
 			Document doc = connector.createDocumentSimple(kmRootPath + documentPath, file);
 			response = doc.getUuid();
